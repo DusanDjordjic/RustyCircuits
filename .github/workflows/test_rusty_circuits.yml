@@ -3,32 +3,39 @@ name: test_rusty_circuits
 on: [push]
 
 jobs: 
-  test_rusty_circuits:
+  fmt:
+    name: fmt
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-      - uses: actions-rs/cargo@v1
 
-      - name: Update local toolchain
-        run: |
-          rustup update
-          rustup component add clippy
+      - name: Install Stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: cargo fmt --check
+        run: cargo fmt --check
 
-      - name: Toolchain info
-        run: |
-          cargo --version --verbose
-          rustc --version
-          cargo clippy --version
+  clippy:
+    name: clippy
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v3
 
-      - name: Lint
-        run: |
-          cargo clippy -- -D warnings
+      - name: Install Stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings
 
-      - name: Test
-        run: |
-          cargo check
-          cargo test --all
+  test: 
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: cargo test --all
+        run: cargo test --all
+
 
 
 
