@@ -1,18 +1,11 @@
+use crate::edge::Edge;
+use crate::error::EcsError;
+use crate::node::Node;
+
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::rc::{Rc, Weak};
-
-use crate::error::EcsError;
-
-pub struct Node<K = u32> {
-    key: K,
-}
-
-pub struct Edge<K = u32> {
-    u: Node<K>,
-    v: Node<K>,
-}
 
 pub struct Network<K = u32>
 where
@@ -44,7 +37,6 @@ where
         }
     }
 
-    // TODO: Add error type Node already exists
     pub fn insert_node(&mut self, node: Node<K>) -> Result<(), EcsError> {
         if self.nodes.contains_key(&node.key) {
             return Err(EcsError::node_exists());
@@ -55,15 +47,16 @@ where
     }
 
     pub fn insert_egde(&mut self, edge: Edge<K>) {
+        let (ukey, vkey) = edge.keys();
         let rc = Rc::new(RefCell::new(edge));
 
         self.edges_from_node
-            .entry(rc.borrow().u.key)
+            .entry(ukey)
             .or_insert(Vec::new())
             .push(Rc::downgrade(&rc));
 
         self.edges_from_node
-            .entry(rc.borrow().v.key)
+            .entry(vkey)
             .or_insert(Vec::new())
             .push(Rc::downgrade(&rc));
 
