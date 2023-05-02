@@ -5,4 +5,18 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "rusty_circuits"
+path = "src/lib.rs"
+
+[[bin]]
+name = "stdin"
+path = "src/bin/stdin.rs"
+
+[[bin]]
+name = "gui"
+path = "src/bin/gui.rs"
+
 [dependencies]
+
+

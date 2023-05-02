@@ -1,4 +1,5 @@
-pub struct Node<K = u32> {
+#[derive(Debug)]
+pub struct Node<K> {
     pub key: K,
 }
 

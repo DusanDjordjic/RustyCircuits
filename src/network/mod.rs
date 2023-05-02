@@ -7,7 +7,8 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::rc::{Rc, Weak};
 
-pub struct Network<K = u32>
+#[derive(Debug)]
+pub struct Network<K>
 where
     K: Eq + Hash + Copy,
 {
@@ -16,24 +17,19 @@ where
     edges_from_node: HashMap<K, Vec<Weak<RefCell<Edge<K>>>>>,
 }
 
-impl<K> Default for Network<K>
-where
-    K: Eq + Hash + Copy,
-{
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl<K> Network<K>
 where
     K: Eq + Hash + Copy,
 {
-    pub fn new() -> Self {
+    pub fn new(
+        nodes: HashMap<K, Node<K>>,
+        edges: Vec<Rc<RefCell<Edge<K>>>>,
+        edges_from_node: HashMap<K, Vec<Weak<RefCell<Edge<K>>>>>,
+    ) -> Self {
         Self {
-            nodes: HashMap::new(),
-            edges: Vec::new(),
-            edges_from_node: HashMap::new(),
+            nodes,
+            edges,
+            edges_from_node,
         }
     }
 
@@ -61,5 +57,25 @@ where
             .push(Rc::downgrade(&rc));
 
         self.edges.push(rc);
+    }
+
+    pub fn get_edge_by_id(&self, edge_id: usize) -> Option<Weak<RefCell<Edge<K>>>> {
+        self.edges
+            .iter()
+            .find(|edge| edge.borrow().get_id() == edge_id)
+            .map(Rc::downgrade)
+    }
+}
+
+impl<K> Default for Network<K>
+where
+    K: Eq + Hash + Copy,
+{
+    fn default() -> Self {
+        Self {
+            nodes: HashMap::new(),
+            edges: Vec::new(),
+            edges_from_node: HashMap::new(),
+        }
     }
 }
